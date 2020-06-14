@@ -1,4 +1,40 @@
-# Create simple table
+# Asked questions:
+
+## Difference between NoSQL/SQL:
+> There're a few things
+SQL:
+>- has relations between tables
+>- strict data typing(enforces validation!) and structure
+>- can be used as backend
+>- good for projects with:
+>  - predictable data structure
+>  - math
+>  - mixed data types
+
+>NoSQL:
+>- documents can have different attributes (no strict layout)
+>- good for projects with:
+>  - unknown data structure
+>  - big amount of strings (NoSQL is perfect for search!)
+>  - json data only
+
+## In-Memory storage
+>This is not strictly tight to databases, you can apply this technique even to a website.
+>
+>Imagine data as something you need to work for to retrieve and change.
+>
+>In memory there are 2 types of storages, let's call them "cold" and "hot" storage. Your hard drive is cold, and your RAM is hot, since it takes more time to perform work on your hard drive then within your RAM.
+>
+>In-Memory means that the data is stored within your RAM. This makes it super fast to work with, but there are several downsides.
+>1) You need to have a well optimized structure, or else you need to have a lot of RAM
+>2) Maintaining this data is hard, you need to allocate and manage it perfectly, to prevent memory leaks.
+>3) Keep in mind that in-memory means also that it will be gone in case your RAM shuts down.
+>4) Big databases are huge, they need a lot of RAM, RAM takes a lot of energy and is super expensive, you also need to cool it. TL;DR it's super expensive for big datasets.
+
+
+# Practical examples:
+
+## Create simple table
 
 ```sql
 postgres=# CREATE TABLE test (id integer, text varchar(255), PRIMARY KEY(id));
@@ -27,7 +63,7 @@ postgres=# SELECT * FROM test;
 (0 rows)
 ```
 
-# Add records to table
+## Add records to table
 
 ```sql
 postgres=# INSERT INTO test
@@ -41,7 +77,7 @@ postgres=# SELECT * FROM test;
 (1 row)
 ```
 
-# Filter record set using `WHERE`
+## Filter record set using `WHERE`
 
 ```sql
 postgres=# SELECT * FROM test WHERE bool_value = FALSE;
@@ -54,7 +90,7 @@ postgres=# SELECT * FROM test WHERE bool_value = FALSE;
 (4 rows)
 ```
 
-# Create relation between tables (m2m [Many-to-Many])
+## Create relation between tables (m2m [Many-to-Many])
 
 ```sql
 postgres=# CREATE TABLE users (id integer, name varchar(55), PRIMARY KEY(id));
@@ -73,16 +109,21 @@ postgres=# \d
 ```
 We create a "Lookup-Table" `user_tests` to simplify relational lookups, this is also the best way to handle m2m relations. 
 
-# Constriaints
+## Constriaints
 
 ```sql
 postgres=# INSERT INTO user_tests
 VALUES
-(8, 2), (9, 2), (10, 2), (1, 2);
+(1, 2);
 ERROR:  duplicate key value violates unique constraint "user_tests_pk"
 DETAIL:  Key (user_id, test_id)=(1, 2) already exists.
-postgres=# INSERT INTO user_tests
-VALUES
+```
+as we can see, the database (probably even the client) validates the data before saving it, this results in an exception being thrown saying 
+```sql
+ERROR: duplicate key value violates unique constriant "user_test_pk"
+```
+Because the user with id `1` has already a record within `user_tests` with test with id `2`.
+```sql
 postgres=# INSERT INTO user_tests
 VALUES
 (2, 8), (2, 9), (2, 10);
